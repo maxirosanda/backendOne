@@ -1,17 +1,7 @@
+import crypto from 'crypto'
+import {promises as fsPromises} from 'fs'
 
 
-/*const pets = [
-    { name: "Bella", age: 3, specie: "dog" },
-    { name: "Simba", age: 2, specie: "cat" },
-    { name: "Max", age: 5, specie: "dog" },
-    { name: "Lola", age: 1, specie: "rabbit" },
-    { name: "Charlie", age: 4, specie: "parrot" },
-    { name: "Luna", age: 3, specie: "cat" },
-    { name: "Rocky", age: 6, specie: "hamster" },
-    { name: "Coco", age: 2, specie: "dog" },
-    { name: "Nemo", age: 1, specie: "fish" },
-    { name: "Toby", age: 8, specie: "turtle" }
-  ];*/
 
 const writePetsFile = async (pets) => {
     try {
