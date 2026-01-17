@@ -1,0 +1,13 @@
+<main>
+    <section class="container-cards-user">
+        {{#each users}}
+            <div class="container-card-user">
+                <h3>Nombre: {{this.fistName}} {{this.lastName}}</h3>
+                {{#if this.isAdult}}
+                    <p>Mayor de edad</p>
+                {{/if}}
+            </div>
+        {{/each}}
+    </section>
+
+</main>

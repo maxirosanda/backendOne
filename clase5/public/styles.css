@@ -1,0 +1,19 @@
+.crear-mascota{
+    display: flex;
+    flex-direction: column;
+    width: 500px;
+    gap: 6px;
+}
+
+.container-card-user{
+    background-color: aqua;
+    width: 250px;
+    margin: 10px;
+}
+
+.container-cards-user{
+    width: 100%;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-around;
+}
