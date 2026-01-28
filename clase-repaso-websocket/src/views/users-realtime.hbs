@@ -1,0 +1,29 @@
+<main>
+    <form id="form-user" class="container-form-user">
+        <input type="text" placeholder="Nombre" name="firstName" required>
+        <input type="text" placeholder="Apellido" name="lastName" required>
+        <input type="number" placeholder="Edad" name="age" required>
+        <input type="number" placeholder="Telefono" name="telephone" required>
+        <button type="submit">Agregar</button>
+    </form>
+    <section class="container-cards-user" id="container-cards-user">
+
+        {{#each users}}
+            <form id="form-user-{{this.id}}" class="container-card-user">
+                <label>Nombre</label>
+                <input type="text" value="{{this.firstName}}" name="firstName" >
+                <label>Apellido</label>
+                <input type="text" value="{{this.lastName}}" name="lastName">
+                <label>Edad</label>
+                <input type="number" value="{{this.age}}" name="age">
+                <label>Telefono</label>
+                <input type="text" value="{{this.telephone}}" name="telephone">
+                <button class="btn-delete" type="button" data-id="{{this.id}}">Eliminar</button>
+                <button class="btn-update" type="button" data-id={{this.id}}>Actualizar</button>
+            </form>
+        {{/each}}
+    </section>
+    <script src="./socket.io/socket.io.js"></script>
+    <script src="./userWebsocket.js"></script>
+    <script src="./users.js"></script>
+</main>
