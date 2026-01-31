@@ -1,20 +1,33 @@
 import { Router } from 'express'
 import { uploader } from '../utils/configMulter.js'
+import { petModel } from '../models/pet.model.js'
+import { Types } from 'mongoose'
+import path from 'path'
 
 const router = Router()
 
-const pets = []
 
-router.get("/",(req,res)=>{
-    res.json(pets)
+router.get("/", async (req,res)=>{
+    try {
+        const pets = await petModel.find()
+        res.json(pets)
+    } catch (error) {
+        res.json(error)
+    }
 })
 
-router.get("/:id",(req,res)=>{
+router.get("/:id",async (req,res)=>{
     const { id } = req.params
-    res.json({message:`el id es: ${id}`})
+    try {
+        const pet = await petModel.findOne({_id:id})
+        res.json([pet])
+    } catch (error) {
+        res.json(error)
+    }
 })
 
-router.post("/",uploader.single("file"),(req,res)=>{
+router.post("/",uploader.single("file"),async (req,res)=>{
+
     const {name, specie, age, idUser} = req.body
 
     if (!req.file) { //Si no existe req.file, significa que hubo un error al subir el archivo
@@ -34,29 +47,49 @@ router.post("/",uploader.single("file"),(req,res)=>{
         return res.json({message:"edad invalida"})
     }
 
-    const id = crypto.randomUUID()
-
-    pets.push({
-        id,
+    const relativePath = path
+                            .relative(process.cwd(), req.file.path)
+                            .replace(/\\/g, "/")
+                            .replace(/^public\//, "");
+    const newPet ={
         name,
         specie,
         age,
-        profile:req.file.path,
+        profile:relativePath,
         idUser
-    })
+    }
 
-    res.json({message:"mascota agregada con exito"})
+    try {
+        const petCreated = await petModel.create(newPet)
+        res.json(petCreated)
+
+    } catch (error) {
+        res.json(error)
+    }
 })
 
-router.patch("/:id",(req,res)=>{
+router.patch("/:id",async(req,res)=>{
     const { id } = req.params
-    const body = req.body
-    res.json({id,...body})
+    const {name,specie,age} = req.body
+    try {
+        const objectId = new Types.ObjectId(id)
+        const petUpdated = await petModel.updateOne({_id:objectId},{name,specie,age})
+        res.json(petUpdated)
+    } catch (error) {
+        res.json(error)
+    }
+    
 })
 
-router.delete("/:id",(req,res)=>{
+router.delete("/:id",async(req,res)=>{
     const {id} = req.params
-    res.json({message:`la mascota de id ${id} fue eliminada de la base datos`})
+    try {
+        const objectId = new Types.ObjectId(id)
+        const petUpdated = await petModel.deleteOne({_id:objectId})
+        res.json(petUpdated)
+    } catch (error) {
+        res.json(error)
+    }
 })
 
 export default router

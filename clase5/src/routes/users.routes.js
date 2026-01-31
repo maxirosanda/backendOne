@@ -1,19 +1,30 @@
 import { Router } from 'express'
+import {userModel} from '../models/user.model.js'
+import mongoose, { Types } from 'mongoose'
 
 const router = Router()
 
-const users = []
 
-router.get("/",(req,res)=>{
-    res.json(users)
+router.get("/",async(req,res)=>{
+    try {
+        const users = await userModel.find()
+        res.json(users)
+    } catch (error) {
+        res.json(error)
+    }
 })
 
-router.get("/:id",(req,res)=>{
+router.get("/:id",async(req,res)=>{
     const { id } = req.params
-    res.json({message:`el id es: ${id}`})
+    try {
+        const user = await userModel.findOne({_id:id})
+        res.json(user)
+    } catch (error) {
+        res.json(error)
+    }
 })
 
-router.post("/",(req,res)=>{
+router.post("/",async (req,res)=>{
     const {firstName, lastName,age, telephone} = req.body
 
     if(!firstName && typeof firstName !== "string"){
@@ -28,29 +39,67 @@ router.post("/",(req,res)=>{
         return res.json({message:"edad invalida"})
     }
 
-    const id = crypto.randomUUID()
-
-    users.push({
-        id,
+    const user = {
         firstName,
         lastName,
-        telephone,
         age,
+        telephone,
         pets:[]
-    })
+    }
 
-    res.json({message:"Usuario agregado con exito"})
+    try {
+        const userCreated= await userModel.create(user)
+        res.json(userCreated)
+    } catch (error) {
+        if(error.code === 11000){
+            return res.json({message:"User duplicated"})
+        }
+        res.json(error)
+    }
 })
 
-router.patch("/:id",(req,res)=>{
+router.patch("/add-pet/:idUser",async(req,res)=>{
+    const {idUser} = req.params
+    const {idPet} = req.body
+    try {
+        const objectIdPet = new Types.ObjectId(idPet)
+        const objectIdUser = new Types.ObjectId(idUser)
+        const userUpdated = await userModel.findByIdAndUpdate(
+            objectIdUser,
+            {
+              $addToSet: { pets: objectIdPet },
+            },
+            { new: true }
+          );
+          res.json(userUpdated)
+
+    } catch (error) {
+       res.json(error) 
+    }
+})
+
+router.patch("/:id",async (req,res)=>{
     const { id } = req.params
-    const body = req.body
-    res.json({id,...body})
+    const {firstName, lastName, age, telephone} = req.body
+    try {
+        const objectId = new  mongoose.Types.ObjectId(id)
+        const userUpdated = await userModel.updateOne({_id:objectId},{firstName,lastName,age,telephone})
+        res.json(userUpdated)
+    } catch (error) {
+        console.log(error)
+        res.json(error)
+    }
+
 })
 
-router.delete("/:id",(req,res)=>{
+router.delete("/:id",async (req,res)=>{
     const {id} = req.params
-    res.json({message:`el usuario de id ${id} fue eliminada de la base datos`})
+    try {
+        const userDeleted = await userModel.deleteOne({_id:id})
+        res.json(userDeleted)
+    } catch (error) {
+        res.json(error)
+    }
 })
 
 export default router

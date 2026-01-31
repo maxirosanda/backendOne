@@ -6,6 +6,7 @@ import {engine} from 'express-handlebars'
 import viewsRouter from './routes/views.routes.js'
 import { Server } from 'socket.io'
 import { createServer } from 'http'
+import mongoose from 'mongoose'
 
 const app = express()
 
@@ -16,6 +17,7 @@ const socketServer = new Server(httpServer)
 
 /* Vistas  */
 app.use(express.urlencoded({ extended: true }))
+app.use(express.json())
 app.use(express.static(basePath + '/public'))
 app.engine('hbs',engine({
     extname:'.hbs',
@@ -25,6 +27,9 @@ app.engine('hbs',engine({
 
 app.set("view engine", "hbs")
 app.set("views",basePath + "/src/views")
+
+
+mongoose.connect("mongodb+srv://maxirosanda:4mHU1UPcNLW5e7pX@cluster0.txad01b.mongodb.net/?appName=Cluster0")
 
 app.use('/adopciones',viewsRouter)
 /* Fin Vistas  */
